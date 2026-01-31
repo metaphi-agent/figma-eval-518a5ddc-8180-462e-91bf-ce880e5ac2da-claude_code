@@ -1,0 +1,26 @@
+{
+  "figma_file_key": "RfBUMqK1JxR4dESXlENKbm",
+  "total_frames": 20,
+  "frames": [
+    {"name": "Opening screen", "node_id": "1:205", "gt_image": "Openning-screen.png", "target_route": "/"},
+    {"name": "Sign Up 1", "node_id": "1:124", "gt_image": "Sign-Up-1.png", "target_route": "/signup"},
+    {"name": "Sign Up 2", "node_id": "1:217", "gt_image": "Sign-Up-2.png", "target_route": "/signup/email"},
+    {"name": "Sign Up 3", "node_id": "1:56", "gt_image": "Sign-Up-3.png", "target_route": "/signup/name"},
+    {"name": "Sign Up 4", "node_id": "1:478", "gt_image": "Sign-Up-4.png", "target_route": "/signup/profile"},
+    {"name": "Sign Up 5", "node_id": "1:244", "gt_image": "Sign-Up-5.png", "target_route": "/signup/verify"},
+    {"name": "Sign Up 6", "node_id": "1:440", "gt_image": "Sign-Up-6.png", "target_route": "/signup/success"},
+    {"name": "Log In 1", "node_id": "1:13", "gt_image": "Log-In-1.png", "target_route": "/login"},
+    {"name": "Log In 2", "node_id": "1:87", "gt_image": "Log-In-2.png", "target_route": "/login/alt"},
+    {"name": "Log In with phone", "node_id": "1:278", "gt_image": "Log-In-with-phone.png", "target_route": "/login/phone"},
+    {"name": "Log In with phone - Enter a code", "node_id": "1:319", "gt_image": "Log-In-with-phone-Enter-a-code.png", "target_route": "/login/phone/code"},
+    {"name": "Log In with phone - Enter a code 2", "node_id": "1:397", "gt_image": "Log-In-with-phone-Enter-a-code-2.png", "target_route": "/login/phone/code-filled"},
+    {"name": "Log In with phone - Wrong Code", "node_id": "1:355", "gt_image": "Log-In-with-phone-Wrong-Code.png", "target_route": "/login/phone/code-error"},
+    {"name": "Forgot password?", "node_id": "1:548", "gt_image": "Forgot-password.png", "target_route": "/forgot-password"},
+    {"name": "Forgot password? - code", "node_id": "1:615", "gt_image": "Forgot-password-code.png", "target_route": "/forgot-password/code"},
+    {"name": "Reset password", "node_id": "1:514", "gt_image": "Reset-password.png", "target_route": "/reset-password"},
+    {"name": "Password changed", "node_id": "1:539", "gt_image": "Password-changed.png", "target_route": "/password-changed"},
+    {"name": "Choose your plan", "node_id": "1:561", "gt_image": "Choose-your-plan.png", "target_route": "/choose-plan"},
+    {"name": "Choose the language", "node_id": "1:583", "gt_image": "Choose-the-language.png", "target_route": "/choose-language"},
+    {"name": "Sign in options", "node_id": "1:154", "gt_image": "Sing-in-options.png", "target_route": "/signin-options"}
+  ]
+}

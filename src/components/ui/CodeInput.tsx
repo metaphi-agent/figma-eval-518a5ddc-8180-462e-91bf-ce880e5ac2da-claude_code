@@ -1,72 +1,90 @@
-import { useRef, useState, KeyboardEvent, ClipboardEvent } from 'react';
+import { useRef, useState, KeyboardEvent, ClipboardEvent } from 'react'
+import clsx from 'clsx'
 
 interface CodeInputProps {
-  length?: number;
-  value: string;
-  onChange: (value: string) => void;
-  error?: boolean;
+  length?: number
+  value: string[]
+  onChange: (value: string[]) => void
+  error?: boolean
+  onComplete?: (code: string) => void
 }
 
-export default function CodeInput({
-  length = 5,
-  value,
-  onChange,
-  error = false
-}: CodeInputProps) {
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+export function CodeInput({ length = 5, value, onChange, error, onComplete }: CodeInputProps) {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
-  const handleChange = (index: number, digit: string) => {
-    if (!/^\d*$/.test(digit)) return;
+  const handleChange = (index: number, inputValue: string) => {
+    const newValue = [...value]
+    const digit = inputValue.replace(/\D/g, '').slice(-1)
+    newValue[index] = digit
+    onChange(newValue)
 
-    const newValue = value.split('');
-    newValue[index] = digit;
-    const updatedValue = newValue.join('');
-    onChange(updatedValue);
-
-    // Move to next input
     if (digit && index < length - 1) {
-      inputRefs.current[index + 1]?.focus();
+      inputRefs.current[index + 1]?.focus()
     }
-  };
+
+    if (newValue.every(v => v) && newValue.length === length) {
+      onComplete?.(newValue.join(''))
+    }
+  }
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !value[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+      inputRefs.current[index - 1]?.focus()
     }
-  };
+    if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
+    if (e.key === 'ArrowRight' && index < length - 1) {
+      inputRefs.current[index + 1]?.focus()
+    }
+  }
 
-  const handlePaste = (e: ClipboardEvent) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, length);
-    if (/^\d+$/.test(pastedData)) {
-      onChange(pastedData);
-      const nextIndex = Math.min(pastedData.length, length - 1);
-      inputRefs.current[nextIndex]?.focus();
+  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, length)
+    const newValue = [...value]
+    pastedData.split('').forEach((char, i) => {
+      if (i < length) {
+        newValue[i] = char
+      }
+    })
+    onChange(newValue)
+
+    const nextEmptyIndex = newValue.findIndex(v => !v)
+    if (nextEmptyIndex !== -1) {
+      inputRefs.current[nextEmptyIndex]?.focus()
+    } else {
+      inputRefs.current[length - 1]?.focus()
+      if (newValue.every(v => v)) {
+        onComplete?.(newValue.join(''))
+      }
     }
-  };
+  }
 
   return (
     <div className="flex gap-3 justify-center">
       {Array.from({ length }).map((_, index) => (
         <input
           key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
+          ref={el => inputRefs.current[index] = el}
           type="text"
           inputMode="numeric"
           maxLength={1}
           value={value[index] || ''}
-          onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
+          onChange={e => handleChange(index, e.target.value)}
+          onKeyDown={e => handleKeyDown(index, e)}
           onPaste={handlePaste}
-          onFocus={() => setFocusedIndex(index)}
-          onBlur={() => setFocusedIndex(null)}
-          className={`w-16 h-16 text-center text-2xl font-semibold rounded-2xl border-2 transition-all duration-150
-            ${error ? 'border-red-500 text-red-500' : 'border-gray-200'}
-            ${focusedIndex === index && !error ? 'border-black' : ''}
-            focus:outline-none`}
+          className={clsx(
+            'w-14 h-16 text-center text-2xl font-medium rounded-xl border-2 outline-none transition-all duration-150',
+            error
+              ? 'border-[#E64646] text-[#E64646]'
+              : value[index]
+                ? 'border-black text-black'
+                : 'border-[#D8DADC] text-black',
+            'focus:border-black focus:ring-1 focus:ring-black'
+          )}
         />
       ))}
     </div>
-  );
+  )
 }

@@ -1,35 +1,33 @@
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom'
+import { Button } from '../components/ui'
+import { StarDecoration } from '../components/ui/StarDecoration'
 
 export default function PasswordChanged() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col items-center justify-center">
-      <div className="max-w-md w-full mx-auto text-center">
-        {/* Success Icon */}
-        <div className="mb-8 flex justify-center">
-          <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <path d="M10 24L20 34L38 14" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        </div>
+    <div className="mobile-container flex flex-col items-center justify-center min-h-screen px-5 py-8">
+      {/* Success Icon */}
+      <div className="flex items-center gap-1 mb-6">
+        <StarDecoration variant="filled" className="w-12 h-12" />
+        <StarDecoration variant="filled" className="w-8 h-8 mt-6" />
+      </div>
 
-        {/* Text */}
-        <h1 className="text-3xl font-bold text-black mb-3">
-          Password changed!
-        </h1>
-        <p className="text-base text-gray-500 mb-12">
-          Your password has been changed<br />
-          successfully
-        </p>
+      {/* Message */}
+      <h1 className="text-[32px] font-bold text-black text-center mb-3">
+        Password changed
+      </h1>
+      <p className="text-[#808080] text-center mb-8">
+        Your password has been changed<br />
+        succesfully
+      </p>
 
-        {/* Button */}
-        <Button onClick={() => navigate('/login')}>
-          Back to Login
+      {/* CTA */}
+      <div className="w-full">
+        <Button variant="primary" onClick={() => navigate('/login')}>
+          Back to login
         </Button>
       </div>
     </div>
-  );
+  )
 }

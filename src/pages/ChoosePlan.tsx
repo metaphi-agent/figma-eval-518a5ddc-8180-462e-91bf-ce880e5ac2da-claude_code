@@ -1,78 +1,92 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button';
-import BackButton from '../components/ui/BackButton';
-import RadioCard from '../components/ui/RadioCard';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button, BackButton, RadioButton } from '../components/ui'
+import { StarDecoration } from '../components/ui/StarDecoration'
+
+type Plan = 'monthly' | 'annual' | 'free'
+
+const plans = [
+  {
+    id: 'monthly' as Plan,
+    name: 'Monthly',
+    price: '$29,99 / mo',
+    description: ''
+  },
+  {
+    id: 'annual' as Plan,
+    name: 'Annual',
+    price: '$15,99 / mo ($192 / year)',
+    description: ''
+  },
+  {
+    id: 'free' as Plan,
+    name: 'Free trial',
+    price: '1 month free',
+    description: ''
+  }
+]
 
 export default function ChoosePlan() {
-  const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState('monthly');
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [selectedPlan, setSelectedPlan] = useState<Plan>('monthly')
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    // Navigate to success or dashboard
-    console.log('Plan selected:', selectedPlan);
-  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    navigate('/')
+  }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col">
-      <div className="max-w-md w-full mx-auto flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-4 pb-8">
-          <BackButton />
-          <div className="absolute top-12 right-8">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <path d="M24 0L26.472 17.528L24 48L21.528 17.528L24 0Z" fill="black"/>
-              <path d="M48 24L30.472 26.472L0 24L30.472 21.528L48 24Z" fill="black"/>
-            </svg>
-          </div>
-        </div>
+    <div className="mobile-container flex flex-col min-h-screen px-5 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
+        <BackButton />
+        <StarDecoration variant="filled" className="w-12 h-12" />
+      </div>
 
-        <h1 className="text-3xl font-bold text-black mb-3">
+      {/* Content */}
+      <div className="flex-1">
+        <h1 className="text-[32px] font-bold text-black mb-2">
           Choose your plan
         </h1>
-        <p className="text-base text-gray-500 mb-8">
+        <p className="text-[#808080] mb-8">
           To complete the sign up process, please<br />
           make the payment
         </p>
 
-        {/* Plans */}
-        <div className="flex-1 space-y-4">
-          <RadioCard
-            name="plan"
-            value="monthly"
-            checked={selectedPlan === 'monthly'}
-            onChange={setSelectedPlan}
-            title="Monthly"
-            description="$29,99 / mo"
-          />
-          <RadioCard
-            name="plan"
-            value="annual"
-            checked={selectedPlan === 'annual'}
-            onChange={setSelectedPlan}
-            title="Annual"
-            description="$15,99 / mo ($192 / year)"
-          />
-          <RadioCard
-            name="plan"
-            value="free"
-            checked={selectedPlan === 'free'}
-            onChange={setSelectedPlan}
-            title="Free trial"
-            description="1 month free"
-          />
-        </div>
-
-        {/* Continue Button */}
-        <div className="pt-6">
-          <Button onClick={handleSubmit} loading={loading}>
-            Send code
-          </Button>
+        {/* Plan Options */}
+        <div className="space-y-3">
+          {plans.map(plan => (
+            <button
+              key={plan.id}
+              type="button"
+              onClick={() => setSelectedPlan(plan.id)}
+              className={`w-full p-4 rounded-xl border-2 text-left transition-colors ${
+                selectedPlan === plan.id
+                  ? 'border-black'
+                  : 'border-[#D8DADC]'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-black">{plan.name}</h3>
+                  <p className="text-[#808080] text-sm">{plan.price}</p>
+                </div>
+                <RadioButton
+                  checked={selectedPlan === plan.id}
+                  onChange={() => setSelectedPlan(plan.id)}
+                />
+              </div>
+            </button>
+          ))}
         </div>
       </div>
+
+      {/* CTA */}
+      <form onSubmit={handleSubmit} className="pt-6">
+        <Button type="submit" variant="primary">
+          Send code
+        </Button>
+      </form>
     </div>
-  );
+  )
 }

@@ -1,85 +1,87 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import BackButton from '../components/ui/BackButton';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input } from '../components/ui'
+import { StarIllustration } from '../components/ui/StarDecoration'
 
 export default function SignUp2() {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: ''
-  });
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    navigate('/signup-3');
-  };
+  const validate = () => {
+    const newErrors: Record<string, string> = {}
+    if (!email) newErrors.email = 'Email is required'
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Invalid email'
+    if (!password) newErrors.password = 'Password is required'
+    else if (password.length < 8) newErrors.password = 'Must be 8 characters'
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords don\'t match'
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (validate()) {
+      navigate('/signup/verify')
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col">
-      <div className="max-w-md w-full mx-auto flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-4 pb-12">
-          <BackButton />
-          <div className="absolute top-12 right-8">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <path d="M24 0L26.472 17.528L24 48L21.528 17.528L24 0Z" fill="black"/>
-              <path d="M48 24L30.472 26.472L0 24L30.472 21.528L48 24Z" fill="black"/>
-            </svg>
-          </div>
-        </div>
+    <div className="mobile-container flex flex-col min-h-screen">
+      {/* Blue card section */}
+      <div className="bg-[#EEF2FF] rounded-b-[32px] px-5 pt-8 pb-10 flex-shrink-0">
+        <div className="flex flex-col items-center">
+          <StarIllustration className="mb-4 scale-75" />
 
-        <h1 className="text-3xl font-bold text-black mb-12">Sign up</h1>
+          <h1 className="text-[32px] font-bold text-black text-center mb-6">
+            Create account
+          </h1>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-          <div className="space-y-6 flex-1">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="w-full space-y-4">
             <Input
-              label="Full name"
-              type="text"
-              placeholder="John Doe"
-              value={formData.fullName}
-              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-            />
-            <Input
-              label="Email address"
               type="email"
-              placeholder="name@example.com"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              placeholder="Email address"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              error={errors.email}
             />
             <Input
-              label="Password"
               type="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              showPasswordToggle
+              error={errors.password}
             />
-          </div>
+            <Input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              showPasswordToggle
+              error={errors.confirmPassword}
+            />
 
-          <div className="space-y-4 pt-6">
-            <Button type="submit" loading={loading}>
-              Sign up
+            <Button type="submit" variant="primary">
+              Create account
             </Button>
+          </form>
+        </div>
+      </div>
 
-            <p className="text-center text-xs text-gray-500">
-              By signing up, you agree to our{' '}
-              <button type="button" className="text-black underline hover:no-underline">
-                Terms of Service
-              </button>{' '}
-              and{' '}
-              <button type="button" className="text-black underline hover:no-underline">
-                Privacy Policy
-              </button>
-            </p>
-          </div>
-        </form>
+      {/* Terms and Conditions */}
+      <div className="flex-1 flex items-end justify-center pb-8 pt-6 px-5">
+        <p className="text-[#808080] text-center text-sm">
+          By creating an account or signing you<br />
+          agree to our{' '}
+          <Link to="#" className="text-black underline font-medium">
+            Terms and Conditions
+          </Link>
+        </p>
       </div>
     </div>
-  );
+  )
 }

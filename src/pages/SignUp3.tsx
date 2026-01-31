@@ -1,58 +1,81 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import BackButton from '../components/ui/BackButton';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button, Input, BackButton } from '../components/ui'
+import { StarDecoration } from '../components/ui/StarDecoration'
 
 export default function SignUp3() {
-  const navigate = useNavigate();
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    navigate('/signup-4');
-  };
+  const validate = () => {
+    const newErrors: Record<string, string> = {}
+    if (!firstName.trim()) newErrors.firstName = 'First name is required'
+    if (!lastName.trim()) newErrors.lastName = 'Last name is required'
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (validate()) {
+      navigate('/signup/profile')
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col">
-      <div className="max-w-md w-full mx-auto flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-4 pb-12">
-          <BackButton />
-          <div className="absolute top-12 right-8">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <path d="M24 0L26.472 17.528L24 48L21.528 17.528L24 0Z" fill="black"/>
-              <path d="M48 24L30.472 26.472L0 24L30.472 21.528L48 24Z" fill="black"/>
-            </svg>
-          </div>
-        </div>
+    <div className="mobile-container flex flex-col min-h-screen px-5 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
+        <BackButton />
+        <StarDecoration variant="filled" className="w-12 h-12" />
+      </div>
 
-        <h1 className="text-3xl font-bold text-black mb-3">
-          What is your date<br />of birth?
+      {/* Content */}
+      <div className="flex-1">
+        <h1 className="text-[32px] font-bold text-black mb-2">
+          Sign up
         </h1>
-        <p className="text-base text-gray-500 mb-12">
-          This helps us verify your age
+        <p className="text-[#808080] mb-8">
+          Create an account to continue!
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-          <div className="flex-1">
-            <Input
-              label="Date of birth"
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="First Name"
+            placeholder="First Name"
+            value={firstName}
+            onChange={e => setFirstName(e.target.value)}
+            error={errors.firstName}
+          />
+          <Input
+            label="Last Name"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={e => setLastName(e.target.value)}
+            error={errors.lastName}
+          />
 
-          <Button type="submit" loading={loading}>
-            Continue
-          </Button>
+          <div className="pt-4">
+            <Button type="submit" variant="primary">
+              Continue
+            </Button>
+          </div>
         </form>
       </div>
+
+      {/* Footer */}
+      <div className="flex justify-center pb-4">
+        <p className="text-[#808080] text-center text-sm">
+          By creating an account or signing you<br />
+          agree to our{' '}
+          <span className="text-black underline font-medium">
+            Terms and Conditions
+          </span>
+        </p>
+      </div>
     </div>
-  );
+  )
 }

@@ -1,82 +1,175 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import CodeInput from '../components/ui/CodeInput';
-import BackButton from '../components/ui/BackButton';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { CodeInput, BackButton } from '../components/ui'
+import { StarDecoration } from '../components/ui/StarDecoration'
 
-export default function LoginPhoneCode() {
-  const navigate = useNavigate();
-  const [code, setCode] = useState('');
+interface LoginPhoneCodeProps {
+  error?: boolean
+  filled?: boolean
+}
+
+export default function LoginPhoneCode({ error = false, filled = false }: LoginPhoneCodeProps) {
+  const navigate = useNavigate()
+  const [code, setCode] = useState<string[]>(filled ? ['2', '5', '0', '1', '7'] : Array(5).fill(''))
+  const [hasError, setHasError] = useState(error)
+  const [timer, setTimer] = useState(20)
+  const [canResend, setCanResend] = useState(false)
+
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer(t => t - 1)
+      }, 1000)
+      return () => clearInterval(interval)
+    } else {
+      setCanResend(true)
+    }
+  }, [timer])
+
+  const handleComplete = (enteredCode: string) => {
+    // Simulate verification - accept any code except 25017
+    if (enteredCode === '25017') {
+      setHasError(true)
+    } else {
+      setHasError(false)
+      navigate('/')
+    }
+  }
+
+  const handleResend = () => {
+    if (canResend) {
+      setTimer(20)
+      setCanResend(false)
+      setCode(Array(5).fill(''))
+      setHasError(false)
+    }
+  }
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col">
-      <div className="max-w-md w-full mx-auto flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-4 pb-12">
-          <BackButton />
-          <div className="absolute top-12 right-8">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <path d="M24 0L26.472 17.528L24 48L21.528 17.528L24 0Z" fill="black"/>
-              <path d="M48 24L30.472 26.472L0 24L30.472 21.528L48 24Z" fill="black"/>
-            </svg>
-          </div>
-        </div>
+    <div className="mobile-container flex flex-col min-h-screen px-5 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
+        <BackButton />
+        <StarDecoration variant="filled" className="w-12 h-12" />
+      </div>
 
-        <h1 className="text-3xl font-bold text-black mb-3">Enter code</h1>
-        <p className="text-base text-gray-500 mb-12">
+      {/* Content */}
+      <div className="flex-1">
+        <h1 className="text-[32px] font-bold text-black mb-2">
+          Enter code
+        </h1>
+        <p className="text-[#808080] mb-10">
           We've sent an SMS with an activation<br />
-          code to your phone +33 2 94 27 84 11
+          code to your phone <span className="text-black font-medium">+33 2 94 27 84 11</span>
         </p>
 
         {/* Code Input */}
-        <div className="flex-1">
+        <div className="mb-4">
           <CodeInput
             value={code}
             onChange={setCode}
-            length={5}
+            onComplete={handleComplete}
+            error={hasError}
           />
-
-          <div className="mt-12 text-center">
-            <button
-              type="button"
-              className="text-sm text-gray-500 hover:text-black transition-colors"
-            >
-              Send code again <span className="text-black">00:20</span>
-            </button>
-          </div>
         </div>
 
-        {/* Keyboard simulation (decorative) */}
-        <div className="grid grid-cols-3 gap-2 bg-gray-50 p-4 rounded-2xl">
-          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '+*#', '0', '←'].map((key, idx) => (
+        {/* Error Message */}
+        {hasError && (
+          <p className="text-center text-[#E64646] mt-4">
+            Wrong code, please try again
+          </p>
+        )}
+      </div>
+
+      {/* Resend Timer */}
+      <div className="flex items-center justify-center gap-2 mb-4">
+        <button
+          onClick={handleResend}
+          disabled={!canResend}
+          className={`font-medium ${canResend ? 'text-black' : 'text-[#808080]'}`}
+        >
+          Send code again
+        </button>
+        {!canResend && (
+          <span className="text-[#808080]">{formatTime(timer)}</span>
+        )}
+      </div>
+
+      {/* Keyboard placeholder */}
+      <div className="bg-[#D3D6DC] rounded-t-lg p-2 -mx-5 -mb-8">
+        <div className="grid grid-cols-3 gap-1">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
             <button
-              key={idx}
-              type="button"
+              key={num}
               onClick={() => {
-                if (key === '←') {
-                  setCode(code.slice(0, -1));
-                } else if (key.length === 1 && /\d/.test(key) && code.length < 5) {
-                  setCode(code + key);
+                const emptyIndex = code.findIndex(c => !c)
+                if (emptyIndex !== -1) {
+                  const newCode = [...code]
+                  newCode[emptyIndex] = String(num)
+                  setCode(newCode)
+                  setHasError(false)
+                  if (emptyIndex === 4) {
+                    handleComplete(newCode.join(''))
+                  }
                 }
               }}
-              className={`h-14 rounded-xl font-semibold transition-colors
-                ${key === '0' ? 'col-start-2' : ''}
-                ${key.length === 1 && /\d/.test(key) ? 'bg-white hover:bg-gray-100 text-black' : 'bg-gray-100 hover:bg-gray-200 text-gray-500'}`}
+              className="h-12 flex flex-col items-center justify-center bg-white rounded-lg shadow-sm active:bg-gray-100"
             >
-              {key === '←' ? (
-                <svg className="w-6 h-6 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 14l-4-4 4-4"/>
-                  <path d="M5 10h11a4 4 0 010 8h-1"/>
-                </svg>
-              ) : (
-                <div>
-                  <div className="text-xl">{key.charAt(0)}</div>
-                  {key.length > 1 && <div className="text-xs text-gray-400">{key.slice(1)}</div>}
-                </div>
-              )}
+              <span className="text-xl font-medium">{num}</span>
+              {num === 2 && <span className="text-[10px] text-gray-500">ABC</span>}
+              {num === 3 && <span className="text-[10px] text-gray-500">DEF</span>}
+              {num === 4 && <span className="text-[10px] text-gray-500">GHI</span>}
+              {num === 5 && <span className="text-[10px] text-gray-500">JKL</span>}
+              {num === 6 && <span className="text-[10px] text-gray-500">MNO</span>}
+              {num === 7 && <span className="text-[10px] text-gray-500">PQRS</span>}
+              {num === 8 && <span className="text-[10px] text-gray-500">TUV</span>}
+              {num === 9 && <span className="text-[10px] text-gray-500">WXYZ</span>}
             </button>
           ))}
+          <button className="h-12 flex items-center justify-center text-gray-500">
+            +*#
+          </button>
+          <button
+            onClick={() => {
+              const emptyIndex = code.findIndex(c => !c)
+              if (emptyIndex !== -1) {
+                const newCode = [...code]
+                newCode[emptyIndex] = '0'
+                setCode(newCode)
+                setHasError(false)
+                if (emptyIndex === 4) {
+                  handleComplete(newCode.join(''))
+                }
+              }
+            }}
+            className="h-12 flex items-center justify-center bg-white rounded-lg shadow-sm active:bg-gray-100"
+          >
+            <span className="text-xl font-medium">0</span>
+          </button>
+          <button
+            onClick={() => {
+              const lastFilledIndex = code.map((c, i) => c ? i : -1).filter(i => i !== -1).pop()
+              if (lastFilledIndex !== undefined && lastFilledIndex >= 0) {
+                const newCode = [...code]
+                newCode[lastFilledIndex] = ''
+                setCode(newCode)
+                setHasError(false)
+              }
+            }}
+            className="h-12 flex items-center justify-center"
+          >
+            <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.5 5L5.5 9M5.5 9L9.5 13M5.5 9H18.5" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

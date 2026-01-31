@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Button, Input, Checkbox, BackButton } from '../components/ui'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input, BackButton, Checkbox } from '../components/ui'
 import { StarDecoration } from '../components/ui/StarDecoration'
 
-export default function SignUp4() {
+export default function Login2() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validate = () => {
@@ -15,8 +15,6 @@ export default function SignUp4() {
     if (!email) newErrors.email = 'Email is required'
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Invalid email'
     if (!password) newErrors.password = 'Password is required'
-    else if (password.length < 8) newErrors.password = 'Must be 8 characters'
-    if (!agreedToTerms) newErrors.terms = 'You must agree to the terms'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -24,7 +22,7 @@ export default function SignUp4() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validate()) {
-      navigate('/signup/verify')
+      navigate('/')
     }
   }
 
@@ -39,10 +37,10 @@ export default function SignUp4() {
       {/* Content */}
       <div className="flex-1">
         <h1 className="text-[32px] font-bold text-black mb-2">
-          Sign up
+          Log in
         </h1>
         <p className="text-[#808080] mb-8">
-          Create an account to continue!
+          Please log in to continue
         </p>
 
         {/* Form */}
@@ -50,7 +48,7 @@ export default function SignUp4() {
           <Input
             label="Email address"
             type="email"
-            placeholder="Email address"
+            placeholder="Enter your email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             error={errors.email}
@@ -58,65 +56,60 @@ export default function SignUp4() {
           <Input
             label="Password"
             type="password"
-            placeholder="Password"
+            placeholder="Enter your password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             showPasswordToggle
             error={errors.password}
           />
 
-          <div className="py-2">
+          <div className="flex items-center justify-between py-2">
             <Checkbox
-              checked={agreedToTerms}
-              onChange={setAgreedToTerms}
-              label={
-                <span className="text-sm text-black">
-                  I agree to the{' '}
-                  <span className="underline">Terms and Conditions</span>
-                </span>
-              }
+              checked={rememberMe}
+              onChange={setRememberMe}
+              label="Remember me"
             />
-            {errors.terms && (
-              <p className="text-sm text-[#E64646] mt-1">{errors.terms}</p>
-            )}
+            <Link to="/forgot-password" className="text-sm text-black font-medium">
+              Forgot password?
+            </Link>
           </div>
 
           <div className="pt-2">
             <Button type="submit" variant="primary">
-              Create account
+              Log in
             </Button>
           </div>
         </form>
 
-        {/* Or Sign up with */}
+        {/* Or Login with */}
         <div className="mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="flex-1 h-px bg-[#D8DADC]" />
-            <span className="text-[#808080] text-sm">Or Sign up with</span>
+            <span className="text-[#808080] text-sm">Or Login with</span>
             <div className="flex-1 h-px bg-[#D8DADC]" />
           </div>
 
           <div className="flex gap-3">
-            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50">
+            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50 transition-colors">
               <img src="./assets/icons/facebook.svg" alt="Facebook" className="w-6 h-6" />
             </button>
-            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50">
+            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50 transition-colors">
               <img src="./assets/icons/google.svg" alt="Google" className="w-6 h-6" />
             </button>
-            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50">
+            <button className="flex-1 h-14 flex items-center justify-center rounded-[10px] border border-[#D8DADC] bg-white hover:bg-gray-50 transition-colors">
               <img src="./assets/icons/apple.svg" alt="Apple" className="w-6 h-6" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Already have account */}
+      {/* Don't have account */}
       <div className="flex justify-center pt-6 pb-4">
         <p className="text-[#808080]">
-          Already have an account?{' '}
-          <a href="#/login" className="text-black font-medium underline">
-            Log in
-          </a>
+          Don't have an account?{' '}
+          <Link to="/signup" className="text-black font-semibold">
+            Sign up
+          </Link>
         </p>
       </div>
     </div>

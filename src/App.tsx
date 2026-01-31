@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import OpeningScreen from './pages/OpeningScreen';
 import SignInOptions from './pages/SignInOptions';
 import Login from './pages/Login';
+import LoginVariant from './pages/LoginVariant';
 import SignUp from './pages/SignUp';
 import SignUp2 from './pages/SignUp2';
 import SignUp3 from './pages/SignUp3';
@@ -27,6 +28,7 @@ export default function App() {
       <Route path="/" element={<OpeningScreen />} />
       <Route path="/signin-options" element={<SignInOptions />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/login-variant" element={<LoginVariant />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signup-2" element={<SignUp2 />} />
       <Route path="/signup-3" element={<SignUp3 />} />
